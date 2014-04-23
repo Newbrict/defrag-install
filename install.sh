@@ -1,6 +1,6 @@
 #!/bin/bash
 
-check_dependancies() {
+check_dependencies() {
 	which curl &&
 	which git &&
 
@@ -91,9 +91,9 @@ failure() {
 # get the config
 source config
 
-echo "Checking Dependancies"
-check_dependancies ||
-failure "Dependancies required to run the script are missing"
+echo "Checking Dependencies"
+check_dependencies ||
+failure "Dependencies required to run the script are missing"
 
 echo "Downloading ioquake data"
 download_pk3s ||
