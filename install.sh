@@ -90,11 +90,14 @@ backup_iodfe() {
 	read response &&
 	[[ $response =~ ^[yY]$ ]] &&
 
-	#download and install
+	# move to root
+	cd .. &&
+
+	# download and install
 	mkdir temporary &&
 
 	# relative to the failed stuff
-	cd ../temporary &&
+	cd temporary &&
 	curl -LOk https://github.com/downloads/runaos/iodfe/iodfe-v3-lin-x86_64.tar.gz &&
 	tar xvzf iodfe-v3-lin-x86_64.tar.gz &&
 
