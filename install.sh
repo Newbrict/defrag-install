@@ -90,8 +90,9 @@ backup_iodfe() {
 	read response &&
 	[[ $response =~ ^[yY]$ ]] &&
 
-	# move to root
+	# move to root, clean up failed build
 	cd .. &&
+	rm -rf iodfe-master/ &&
 
 	# download and install
 	mkdir temporary &&
