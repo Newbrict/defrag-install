@@ -85,8 +85,27 @@ download_defrag() {
 	return 1
 }
 
-check_dependancies
-download_pk3s
-download_iodfe
-build_iodfe
-download_defrag
+failure() {
+	echo $1
+	exit 1
+}
+
+echo "Checking Dependancies"
+check_dependancies ||
+failure "Dependancies required to run the script are missing"
+
+echo "Downloading ioquake data"
+download_pk3s ||
+failure "Something went wrong during ioquake data download"
+
+echo "Downloading iodfe"
+download_iodfe ||
+failure "Something went wrong during the iodfe download"
+
+echo "Building iodfe"
+build_iodfe ||
+failure "Something went wrong during the iodfe build"
+
+echo "Downloading defrag"
+download_defrag ||
+failure "Something went wrong during the DeFRaG download"
