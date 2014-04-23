@@ -83,6 +83,33 @@ download_defrag() {
 	return 1
 }
 
+backup_iodfe() {
+	# check to see if they want to get the backup iodfe
+	echo "Something went wrong during the iodfe build" &&
+	echo "Would you like to download a precompiled iodfe? [y/n]" &&
+	read response &&
+	[[ $response =~ ^[yY]$ ]] &&
+
+	#download and install
+	mkdir temporary &&
+	cd temporary &&
+	curl -LOk https://github.com/downloads/runaos/iodfe/iodfe-v3-lin-x86_64.tar.gz &&
+	tar xvzf iodfe-v3-lin-x86_64.tar.gz &&
+
+	# copy the file into ioquake directory
+	mv iodfengine.x86_64 ../ioquake3/ &&
+
+	# cleanup
+	cd .. &&
+	rm -rf temporary/ &&
+
+	# everything went well
+	return 0 ||
+
+	# something went wrong
+	return 1
+}
+
 failure() {
 	echo $1
 	exit 1
@@ -105,6 +132,7 @@ failure "Something went wrong during the iodfe download"
 
 echo "Building iodfe"
 build_iodfe ||
+backup_iodfe ||
 failure "Something went wrong during the iodfe build"
 
 echo "Downloading defrag"
