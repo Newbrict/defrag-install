@@ -14,16 +14,14 @@ check_dependencies() {
 download_pk3s() {
 	# by downloading this you agree to the UELA:
 	# http://ioquake3.org/extras/patch-data/
-	referer="http://ioquake3.org/extras/patch-data/"
-	zipFile="http://ioquake3.org/data/quake3-latest-pk3s.zip"
+	referer="http://ioquake3.org/extras/patch-data/" &&
+	zipFile="http://ioquake3.org/data/quake3-latest-pk3s.zip" &&
+	cd $base/temporary/ &&
 	curl --referer $referer $zipFile > quake3-latest-pk3s.zip &&
 
 	# unzip and rename the files
 	unzip quake3-latest-pk3s.zip &&
-	mv quake3-latest-pk3s ioquake3 &&
-
-	# cleanup
-	rm quake3-latest-pk3s.zip &&
+	mv quake3-latest-pk3s $base/ioquake3 &&
 
 	# everything went well
 	return 0 ||
@@ -34,11 +32,9 @@ download_pk3s() {
 
 download_iodfe() {
 	# download and unzip
+	cd $base/temporary/ &&
 	curl -LOk https://github.com/Newbrict/iodfe/archive/master.zip &&
 	unzip master.zip &&
-
-	#cleanup
-	rm master.zip &&
 
 	# everything went well
 	return 0 ||
@@ -49,15 +45,11 @@ download_iodfe() {
 
 build_iodfe() {
 	# build engine
-	cd iodfe-master &&
+	cd $base/temporary/iodfe-master/ &&
 	make &&
 
 	# move engine into install directory
-	mv build/release-linux-x86_64/iodfengine.x86_64 ../ioquake3/ &&
-
-	# cleanup
-	cd .. &&
-	rm -rf iodfe-master/ &&
+	mv build/release-linux-x86_64/iodfengine.x86_64 $base/ioquake3/ &&
 
 	# everything went well
 	return 0 ||
@@ -68,14 +60,11 @@ build_iodfe() {
 
 download_defrag() {
 	# download and unzip
-	cd ioquake3 &&
+	cd $base/temporary/ &&
 	curl http://q3defrag.org/files/defrag/defrag_${defragVersion}.zip > df.zip &&
 	unzip df.zip &&
 
-	# cleanup
-	rm df.zip &&
-	cd .. &&
-
+	mv defrag/ $base/ioquake3/ &&
 	# everything went well
 	return 0 ||
 
@@ -90,24 +79,16 @@ backup_iodfe() {
 	read response &&
 	[[ $response =~ ^[yY]$ ]] &&
 
-	# move to root, clean up failed build
-	cd .. &&
-	rm -rf iodfe-master/ &&
-
-	# download and install
-	mkdir temporary &&
-
 	# relative to the failed stuff
-	cd temporary &&
+	cd $base/temporary/ &&
+	curl -LOk https://github.com/downloads/runaos/iodfe/iodfe-v3-lin-i386.tar.gz &&
 	curl -LOk https://github.com/downloads/runaos/iodfe/iodfe-v3-lin-x86_64.tar.gz &&
 	tar xvzf iodfe-v3-lin-x86_64.tar.gz &&
+	tar xvzf iodfe-v3-lin-i386.tar.gz &&
 
 	# copy the file into ioquake directory
-	mv iodfengine.x86_64 ../ioquake3/ &&
-
-	# cleanup
-	cd .. &&
-	rm -rf temporary/ &&
+	mv iodfengine.x86_64 $base/ioquake3/ &&
+	mv iodfengine.i386 $base/ioquake3/ &&
 
 	# everything went well
 	return 0 ||
@@ -116,13 +97,22 @@ backup_iodfe() {
 	return 1
 }
 
+cleanup() {
+	echo "cleaning up temporary files..."
+	cd $base
+	rm -r $tempDir
+	echo "all clean :)"
+}
+
 failure() {
 	echo $1
+	cleanup
 	exit 1
 }
 
 # get the config
 source config
+mkdir $tempDir
 
 echo "Checking Dependencies"
 check_dependencies ||
@@ -144,3 +134,6 @@ failure "Something went wrong during the iodfe build"
 echo "Downloading defrag"
 download_defrag ||
 failure "Something went wrong during the DeFRaG download"
+
+# cleanup temp file
+cleanup

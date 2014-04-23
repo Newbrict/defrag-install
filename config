@@ -1,1 +1,3 @@
 defragVersion="1.91.22"
+base="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+tempDir="temporary"
