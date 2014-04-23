@@ -92,7 +92,9 @@ backup_iodfe() {
 
 	#download and install
 	mkdir temporary &&
-	cd temporary &&
+
+	# relative to the failed stuff
+	cd ../temporary &&
 	curl -LOk https://github.com/downloads/runaos/iodfe/iodfe-v3-lin-x86_64.tar.gz &&
 	tar xvzf iodfe-v3-lin-x86_64.tar.gz &&
 
