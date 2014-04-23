@@ -1,7 +1,5 @@
 #!/bin/bash
 
-defragVersion="1.91.22"
-
 check_dependancies() {
 	which curl &&
 	which git &&
@@ -89,6 +87,9 @@ failure() {
 	echo $1
 	exit 1
 }
+
+# get the config
+source config
 
 echo "Checking Dependancies"
 check_dependancies ||
